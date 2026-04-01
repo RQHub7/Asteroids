@@ -1,7 +1,7 @@
 [project]
-name = "asteroidz"
+name = "Asteroids"
 version = "0.1.0"
-description = "Add your description here"
+description = "Basic version of the classic - might spinoff and modify later on..."
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [

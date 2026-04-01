@@ -13,6 +13,9 @@ def main():
     clock = pygame.time.Clock()
     dt = 0 # delta tick - change in tick - kinda like game's metronome
 
+    updatable = pygame.sprite.Group()
+    drawable = pygame.sprite.Group()
+    Player.containers = (updatable, drawable)
 
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
@@ -23,8 +26,11 @@ def main():
             if event.type == pygame.QUIT:
                 return
         screen.fill("black")
-        player.draw(screen)
-        player.update(dt)
+
+        for updates in updatable:
+            updates.update(dt)
+        for draws in drawable:
+            draws.draw(screen)
 
         dt = clock.tick(60) / 1000
         pygame.display.flip()
