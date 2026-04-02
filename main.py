@@ -5,6 +5,8 @@ from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
 import sys
+from shot import Shot
+
 
 def main():
     print("Starting Asteroids with pygame version: VERSION")
@@ -28,6 +30,11 @@ def main():
     AsteroidField.containers = (updatable)
     asteroid_field = AsteroidField()
 
+    # Shots containers & instance setup
+    shots = pygame.sprite.Group()
+    Shot.containers = (shots, updatable, drawable)
+
+
     #game loop
     while True:
         log_state()
@@ -43,6 +50,11 @@ def main():
                 log_event("player_hit")
                 print("Game Over!")
                 sys.exit()
+            for shot in shots:
+                if asteroid.collides_with(shot):
+                    log_event("asteroid_shot")
+                    shot.kill()
+                    asteroid.kill()            
 
         for draws in drawable:
             draws.draw(screen)
