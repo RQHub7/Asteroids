@@ -137,6 +137,18 @@ def main():
 
             dt = clock.tick(60) / 1000
             
+            # Screen wrapping for asteroids
+            for asteroid in asteroids:
+                if asteroid.position.x < 0:
+                    asteroid.position.x = SCREEN_WIDTH
+                elif asteroid.position.x > SCREEN_WIDTH:
+                    asteroid.position.x = 0
+                if asteroid.position.y < 0:
+                    asteroid.position.y = SCREEN_HEIGHT
+                elif asteroid.position.y > SCREEN_HEIGHT:
+                    asteroid.position.y = 0
+
+
         pygame.display.flip()
 
 
