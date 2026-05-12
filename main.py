@@ -155,6 +155,15 @@ def main():
                 elif asteroid.position.y > SCREEN_HEIGHT:
                     asteroid.position.y = 0
 
+            if player.position.x < 0:
+                player.position.x = SCREEN_WIDTH
+            elif player.position.x > SCREEN_WIDTH:
+                player.position.x = 0
+            if player.position.y < 0:
+                player.position.y = SCREEN_HEIGHT
+            elif player.position.y > SCREEN_HEIGHT:
+                player.position.y = 0
+
 
         pygame.display.flip()
 
