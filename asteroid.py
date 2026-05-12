@@ -5,8 +5,14 @@ from logger import log_event
 import random
 
 class Asteroid(CircleShape):
-    def __init__(self, x, y, radius):
+    def __init__(self, x, y, radius, velocity=None):
         super().__init__(x, y, radius)
+        if velocity is None:
+            angle = random.uniform(0, 360)
+            speed = random.uniform(50, 150)
+            self.velocity = pygame.math.Vector2(speed, 0).rotate(angle)
+        else: 
+            self.velocity = velocity
 
     def draw(self, screen):
         pygame.draw.circle(screen, "white", self.position, self.radius, LINE_WIDTH)
@@ -17,16 +23,21 @@ class Asteroid(CircleShape):
     def split(self):
         self.kill()
         if self.radius <= ASTEROID_MIN_RADIUS:
-            return
+            return []
         else:
             log_event("asteroid_split")
-            debris_angle = random.uniform(20, 50)
-            debris_1 = self.velocity.rotate(debris_angle)
-            debris_2 = self.velocity.rotate(-debris_angle)
-            new_radius = self.radius - ASTEROID_MIN_RADIUS
-            asteroid_1 = Asteroid(self.position.x, self.position.y, new_radius) 
-            asteroid_2 = Asteroid(self.position.x, self.position.y, new_radius)
-            asteroid_1.velocity = debris_1 * 1.2
-            asteroid_2.velocity = debris_2 * 1.2 
+            new_radius = self.radius / 2 
+            if new_radius < ASTEROID_MIN_RADIUS:
+                new_radius = ASTEROID_MIN_RADIUS
+
+            # Handling new asteroids from split
+            new_asteroids = []
+            for _ in range(2):
+                angle_offset = random.uniform(-30, 30) 
+                new_velocity = self.velocity.rotate(angle_offset) * 1.2 
+                offset_distance = self.radius + new_radius
+                new_position = self.position + new_velocity.normalize() * offset_distance
+                new_asteroids.append(Asteroid(new_position.x, new_position.y, new_radius, new_velocity))
+            return new_asteroids
 
 

@@ -7,6 +7,7 @@ from asteroidfield import AsteroidField
 import sys
 from shot import Shot
 from scoring import ScoreBoard
+import random
 
 def main():
     print("Starting Asteroids with pygame version: VERSION")
@@ -110,6 +111,8 @@ def main():
 
             for updates in updatable:
                 updates.update(dt)
+
+            # Asteroid-player collision handling
             for asteroid in asteroids:
                 if player.collides_with(asteroid):
                     log_event("player_hit")
@@ -130,7 +133,11 @@ def main():
                         log_event("asteroid_shot")
                         score_board.update_score(100)
                         shot.kill()
-                        asteroid.split()            
+                        new_asteroids = asteroid.split()
+                        for new_ast in new_asteroids:
+                            asteroids.add(new_ast)
+                            updatable.add(new_ast)
+                            drawable.add(new_ast)        
 
             for draws in drawable:
                 draws.draw(screen)
