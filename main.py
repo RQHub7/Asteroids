@@ -169,10 +169,52 @@ def main():
                         score_board.update_score(100)
                         shot.kill()
                         new_asteroids = asteroid.split()
-                        for new_ast in new_asteroids:
-                            asteroids.add(new_ast)
-                            updatable.add(new_ast)
-                            drawable.add(new_ast)        
+                        for asteroid_debris in new_asteroids:
+                            asteroids.add(asteroid_debris)
+                            updatable.add(asteroid_debris)
+                            drawable.add(asteroid_debris)        
+
+
+
+            # New asteroid-asteroid collision handling
+            # Use a list of asteroids to iterate through to avoid issues with modifying the group during iteration
+            collided_asteroids = set() # To keep track of asteroids that have already been involved in a collision this tick
+
+            for i, asteroid_a in enumerate(list(asteroids)): # Convert to list to iterate safely while modifying original group
+                if asteroid_a in collided_asteroids:
+                    continue
+
+                for j, asteroid_b in enumerate(list(asteroids)): # Convert to list
+                    if i >= j: # Avoid self-collision and duplicate checks
+                        continue
+                    if asteroid_b in collided_asteroids:
+                        continue
+
+                    if asteroid_a.collides_with(asteroid_b):
+                        log_event("asteroid_asteroid_collision")
+                        
+                        # Decide which asteroid splits - let's say asteroid_a splits
+                        new_asteroids = asteroid_a.split_on_collision(asteroid_b)
+                        for asteroid_debris in new_asteroids:
+                            asteroids.add(asteroid_debris)
+                            updatable.add(asteroid_debris)
+                            drawable.add(asteroid_debris)
+                        
+                        # Mark asteroid_a as collided so it's not processed again this tick
+                        collided_asteroids.add(asteroid_a)
+
+                        # Remaining asteroid (asteroid_b) has a random possibility for its path to move slightly
+                        if random.random() < 0.5: # 50% chance to change path
+                            asteroid_b.randomize_velocity_slightly()
+                        
+                        # Mark asteroid_b as collided to avoid processing it with another asteroid this tick
+                        collided_asteroids.add(asteroid_b)
+                        
+                        # If asteroid_a was split, it's already killed. 
+                        # We don't want asteroid_b to split here as well, as per the requirement "split() 1 of the colliding asteroids for every collision."
+                        break # Break from inner loop to process next asteroid_a
+
+
 
             for draws in drawable:
                 draws.draw(screen)
