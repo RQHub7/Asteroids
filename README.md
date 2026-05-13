@@ -28,7 +28,7 @@ https://github.com/user-attachments/assets/911f4ee4-5ad6-4b25-94e7-8b7eb19e927a
        * See installation instructions to play on Windows 
 * ***New***: Cyan spaceship that fires out red shots
 * ***New***: Asteroid-Asteroid collision creates chaos w/out clutter
-    * My AI Agent wrote this feature. Check out the prompt here for the process.
+    * My AI Agent wrote this feature. Check out the Usage Examples section [here](https://github.com/RQHub7/AI_Agent) for the process. 
     * ***New***: Slight randomness to collision interactions (Angles & Speed)
     * LLM powered Agent comment notes left in.
         * Some variable names were adjusted, notes line up w/ code still
