@@ -4,10 +4,13 @@ from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED, PLAYER_SPEED
 from shot import Shot
 
 class Player(CircleShape):
-    def __init__(self, x, y):
+    
+    def __init__(self, x, y, shot_sound, audio_enabled):
         super().__init__(x, y, PLAYER_RADIUS)
         self.rotation = 0
         self.cooldown = 0
+        self.shot_sound = shot_sound # Assign passed shot_sound
+        self.audio_enabled = audio_enabled # Assign passed audio_enabled
     
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -18,7 +21,7 @@ class Player(CircleShape):
         return [a, b, c]
     
     def draw(self, screen):
-        pygame.draw.polygon(screen, "white", self.triangle(), LINE_WIDTH)
+        pygame.draw.polygon(screen, "cyan", self.triangle(), LINE_WIDTH)
 
     def rotate(self, dt):
         self.rotation += (PLAYER_TURN_SPEED * dt)
@@ -36,7 +39,9 @@ class Player(CircleShape):
         if keys[pygame.K_s]:
             self.move(-dt)
         if keys[pygame.K_SPACE]:
-            self.shoot()
+            if self.shoot(): # shoot returns True if a shot was fired
+                if self.shot_sound and self.audio_enabled:
+                    self.shot_sound.play()
 
     def move(self, dt):
         unit_vector = pygame.Vector2(0,1)
@@ -46,9 +51,9 @@ class Player(CircleShape):
 
     def shoot(self):
         if self.cooldown > 0:
-            pass
+            return False # No shot fired
         else:
             shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
             shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
             self.cooldown = PLAYER_SHOOT_COOLDOWN_SECONDS
-        
+            return True # Shot fired

@@ -9,11 +9,37 @@ from shot import Shot
 from scoring import ScoreBoard
 import random
 
+audio_enabled = False
+
+click_sound = None
+aa_collision_sound = None
+explosion_sound = None
+crash_sound = None
+shot_sound = None # Added global declaration for shot_sound
+
+def load_sounds():
+    global click_sound, aa_collision_sound, explosion_sound, crash_sound, shot_sound
+    click_sound = pygame.mixer.Sound("sounds/Click.wav")
+    aa_collision_sound = pygame.mixer.Sound("sounds/AA_Collision.wav")
+    explosion_sound = pygame.mixer.Sound("sounds/Explosion.wav")
+    crash_sound = pygame.mixer.Sound("sounds/Crash.wav")
+    shot_sound = pygame.mixer.Sound("sounds/Shot.wav")
+
 def main():
+    try:
+        pygame.init()
+        pygame.mixer.init()
+        load_sounds()
+        global audio_enabled # Declare audio_enabled as global here
+        audio_enabled = True
+    except pygame.error as e:
+        print(f"Warning: Could not initialize audio: {e}")
+        audio_enabled = False
+
     print("Starting Asteroids with pygame version: VERSION")
     print(f"Screen width: {SCREEN_WIDTH}")
     print(f"Screen height: {SCREEN_HEIGHT}")
-    pygame.init()
+    # Removed redundant pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.event.set_grab(True)
     pygame.event.set_grab(False)
@@ -91,8 +117,13 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if exit_button_rect.collidepoint(event.pos):
+                    if click_sound and audio_enabled:
+                        click_sound.play()
                     sys.exit()
+
                 elif start_button_rect.collidepoint(event.pos):
+                    if click_sound and audio_enabled:
+                        click_sound.play()
 
                     updatable.empty()
                     drawable.empty()
@@ -100,7 +131,7 @@ def main():
                     shots.empty()
                     score.empty()
 
-                    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, shot_sound, audio_enabled) # Pass shot_sound and audio_enabled
                     score_board = ScoreBoard(10, 10)
                     asteroid_field = AsteroidField()
 
@@ -115,6 +146,8 @@ def main():
             # Asteroid-player collision handling
             for asteroid in asteroids:
                 if player.collides_with(asteroid):
+                    if crash_sound and audio_enabled:
+                        crash_sound.play()
                     log_event("player_hit")
                     print("GAME OVER!")
                     heading_text = "GAME OVER!" 
@@ -130,6 +163,8 @@ def main():
 
                 for shot in shots:
                     if asteroid.collides_with(shot):
+                        if explosion_sound and audio_enabled:
+                            explosion_sound.play()
                         log_event("asteroid_shot")
                         score_board.update_score(100)
                         shot.kill()
